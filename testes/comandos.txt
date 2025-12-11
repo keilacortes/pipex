@@ -1,0 +1,51 @@
+< infile cmd1 | cmd2 > outfile
+ex.:
+< nomes.txt sort | uniq > nomes_ordenados.txt
+
+##########################################################################################
+ < nomes.txt           -> lê os nomes do arquivo nomes.txt;
+ sort                  -> ordena os nomes alfabeticamente;
+ | uniq                -> remove duplicatas;
+ > nomes_ordenados.txt -> grava resultado final em nomes_ordenados.txt;
+
+... comandos válidos e arquivo1 existente: arquivo2 é criado;
+... comandos válidos e arquivo1 não existe: "nomeDoArquivo1: No such file or Directory" (cria arquivo2 vazio se não existir);
+... qualquer comando inválido: "nomeDo1°CmdErrado: command not found" (se os dois forem inválidos separa com '\n');
+... número de argumentos maior que quatro: "nomeQuintoArgumento: No such file or directory" 
+##########################################################################################
+
+execução do pipex:
+./pipex infile "cmd1" "cmd2" outfile
+
+strace -o relatorio.txt ./pipex (...comandos...)"
+O strace mostra todas as system calls que o seu programa fez. Algumas são difíceis de entender, mas os pipe e close são mais evidentes. Quando você fecha um fd que já estava fechado, você vai ver no strace que o valor de retorno de close(fd) é EBADF (error: bad file descriptor). Isso não gera nenhum "problema" (e é por isso que gambiarra vai funcionar quando se observar o resultado do valgrind), mas fechar fds desnecessários - principalmente no bônus - é um indicativo de que a lógica dos fds e dos pipes ainda não foi totalmente absorvida.
+Uma das principais razões da minha confusão no pipex (que me dá até vergonha de admitir): eu confundia o "file descriptor 0" (aquele é por definição é o STDIN_FILENO de todo processo) com o meu pipe "int fd[0]" ("fd" é como se convenciona chamar a array de ints criada para um pipe)! Isso dava um nó na minha cabeça disléxica na hora de fechar os fds, porque eu achava que fechar fd[0] era fechar o STDIN_FILENO, e fechar o fd[1] era fechar o STDOUT_FILENO rsss... Me ajudou quando eu passei a chamar o pipe de... pipe! pipe[0] e pipe[1].
+
+links:
+https://linux.die.net/man/2/unlink
+https://linux.die.net/man/2/access
+https://linux.die.net/man/2/dup2
+https://linux.die.net/man/2/fork
+https://linux.die.net/man/2/wait
+
+fork e exec:
+https://ece.uwaterloo.ca/~dwharder/icsrts/Tutorials/fork_exec/
+https://wadite.hashnode.dev/simplified-c-and-linux-fork-and-exec
+https://www.thegeekstuff.com/2012/03/c-process-control-functions/
+
+pipes:
+https://tldp.org/LDP/lpg/node11.html
+https://www.scaler.com/topics/pipes-in-os/
+https://www.geeksforgeeks.org/c/pipe-system-call/
+
+dup(2):
+https://www.baeldung.com/linux/c-dup2-redirect-stdout
+
+fds abertos -> ls -la/proc/$$/fd
+
+
+https://github.com/jdecorte-be/42-Pipex
+https://www.certificacaolinux.com.br/como-funciona-o-kernel-do-linux/
+https://pt.scribd.com/document/860285745/ng-2-pipex
+https://www.w3resource.com/c-programming/c-error-handling.php
+https://access.redhat.com/articles/2483#:~:text=e%20trace=all-,An%C3%A1lise%20de%20Desempenho,habilitado%20com%20o%20sinalizador%20%2Dc%20.
