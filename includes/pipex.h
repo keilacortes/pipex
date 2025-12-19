@@ -22,15 +22,10 @@
 # include <errno.h>
 # include <string.h>
 
-// Erros
 void	pipe_error(char *msg);
-
-// Utilitários
 void	free_arr(char **arr);
 void	execute(char *cmd, char **envp);
 char	*join_path(char *path, char *cmd);
-
-// Execução
 void	pipex(char **infile, char **envp);
 
 #endif

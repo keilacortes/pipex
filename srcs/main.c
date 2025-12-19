@@ -15,7 +15,8 @@
 int	main(int argc, char **argv, char **envp)
 {
 	if (argc != 5)
-		pipe_error("Usage: ./pipex <file1> <cmd1> <cmd2> <file2>\n");
-	pipex(argv, envp);
+		ft_printf("Usage: ./pipex <file1> <cmd1> <cmd2> <file2>\n");
+	else
+		pipex(argv, envp);
 	return (0);
 }

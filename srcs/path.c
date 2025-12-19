@@ -70,7 +70,7 @@ void	execute(char *cmd, char **envp)
 		exit(127);
 	}
 	execve(path, args, envp);
-	perror("pipex");
 	free(path);
 	free_arr(args);
+	pipe_error("pipex");
 }
